@@ -48,8 +48,14 @@
                     <h2>PURCHASE VALUE</h2>
                     <label for="input_text4">PURCHASE VALUE ENTERED (e.g., '$ Four Hundred... dollars and Twenty... cents')</label>
                     <textarea name="input_text4" rows="3">{{ user_input4 }}</textarea>
-                    <label for="input_text5">DOWN PAYMENT % (e.g., 18.37)</label>
+                    <label for="input_text5">PURCHASE VALUE REDUCTION % (e.g., 18.37)</label>
                     <input type="text" id="input_text5" name="input_text5" value="{{ user_input5 }}">
+                    <label for="input_text6">DOWN PAYMENT % (e.g., 18.37)</label>
+                    <input type="text" id="input_text6" name="input_text6" value="{{ user_input6 }}">
+                    <label for="input_text7">LOAN PERIOD (YEARS) (e.g., 30)</label>
+                    <input type="text" id="input_text7" name="input_text7" value="{{ user_input7 }}">
+                    <label for="input_text8">MONTHLY PRINCIPAL REDUCTION % (e.g., 18.37)</label>
+                    <input type="text" id="input_text8" name="input_text8" value="{{ user_input8 }}">
                 </div>
                 <div class="output-group">
                     {% if processed_text4 %}
@@ -58,19 +64,40 @@
                         <div id="output4_original_value" class="output-box">{{ processed_text4.original_amount }}</div>
                         <button type="button" class="copyButton" onclick="copyOutput('output4_original_value', event)">Copy</button>
                     </div>
-                    {% endif %}
-                    {% if processed_text4 %}
                     <div class="output-item">
-                        <label for="output4_down_payment">DOWN PAYMENT VALUE</label>
-                        <div id="output4_down_payment" class="output-box">{{ processed_text4.down_payment_value }}</div>
-                        <button type="button" class="copyButton" onclick="copyOutput('output4_down_payment', event)">Copy</button>
+                        <label for="output4_reduced_value">REDUCED PURCHASE VALUE</label>
+                        <div id="output4_reduced_value" class="output-box">{{ processed_text4.reduced_value }}</div>
+                        <button type="button" class="copyButton" onclick="copyOutput('output4_reduced_value', event)">Copy</button>
                     </div>
-                    {% endif %}
-                    {% if processed_text4 %}
+                    <div class="output-item">
+                        <label for="output4_pv_excel">PURCHASE VALUE TO ENTER IN EXCEL</label>
+                        <div id="output4_pv_excel" class="output-box">{{ processed_text4.pv_enter_excel }}</div>
+                        <button type="button" class="copyButton" onclick="copyOutput('output4_pv_excel', event)">Copy</button>
+                    </div>
+                    <div class="output-item">
+                        <label for="output4_dp_value">DOWN PAYMENT VALUE</label>
+                        <div id="output4_dp_value" class="output-box">{{ processed_text4.dp_value }}</div>
+                        <button type="button" class="copyButton" onclick="copyOutput('output4_dp_value', event)">Copy</button>
+                    </div>
                     <div class="output-item">
                         <label for="output4_loan_amount">LOAN AMOUNTED TO BE ENTERED</label>
                         <div id="output4_loan_amount" class="output-box">{{ processed_text4.loan_amount }}</div>
                         <button type="button" class="copyButton" onclick="copyOutput('output4_loan_amount', event)">Copy</button>
+                    </div>
+                    <div class="output-item">
+                        <label for="output4_annual_principal">ANNUAL PRINCIPAL (TRUNCATED)</label>
+                        <div id="output4_annual_principal" class="output-box">{{ processed_text4.annual_principal }}</div>
+                        <button type="button" class="copyButton" onclick="copyOutput('output4_annual_principal', event)">Copy</button>
+                    </div>
+                    <div class="output-item">
+                        <label for="output4_monthly_principal">MONTHLY PRINCIPAL (TRUNCATED)</label>
+                        <div id="output4_monthly_principal" class="output-box">{{ processed_text4.monthly_principal }}</div>
+                        <button type="button" class="copyButton" onclick="copyOutput('output4_monthly_principal', event)">Copy</button>
+                    </div>
+                    <div class="output-item">
+                        <label for="output4_final_principal">FINAL PRINCIPAL</label>
+                        <div id="output4_final_principal" class="output-box">{{ processed_text4.final_principal }}</div>
+                        <button type="button" class="copyButton" onclick="copyOutput('output4_final_principal', event)">Copy</button>
                     </div>
                     {% endif %}
                 </div>
