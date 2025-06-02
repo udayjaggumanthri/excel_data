@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Processor</title>
+    <!-- Bootstrap CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Text Processors</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-section">
+                <div class="input-group">
+                    <h2>CUSTOMER NAME</h2>
+                    <textarea name="input_text1" rows="5" placeholder="Enter your text here..."></textarea>
+                </div>
+                <div class="output-group">
+                    {% if processed_text1 %}
+                    <div class="output-item">
+                        <div id="output1" class="output-box">{{ processed_text1 }}</div>
+                        <button type="button" class="copyButton" onclick="copyOutput('output1', event)">Copy</button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="input-group">
+                    <h2>CITY , STATE</h2>
+                    <textarea name="input_text3" rows="5" placeholder="Enter location here..."></textarea>
+                </div>
+                <div class="output-group">
+                    {% if processed_text3 %}
+                    <div class="output-item">
+                        <div id="output3" class="output-box">{{ processed_text3 }}</div>
+                        <button type="button" class="copyButton" onclick="copyOutput('output3', event)">Copy</button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="input-group">
+                    <h2>PURCHASE VALUE</h2>
+                    <label for="input_text4">PURCHASE VALUE ENTERED (e.g., '$ Four Hundred... dollars and Twenty... cents')</label>
+                    <textarea name="input_text4" rows="3">{{ user_input4 }}</textarea>
+                    <label for="input_text5">DOWN PAYMENT % (e.g., 18.37)</label>
+                    <input type="text" id="input_text5" name="input_text5" value="{{ user_input5 }}">
+                </div>
+                <div class="output-group">
+                    {% if processed_text4 %}
+                    <div class="output-item">
+                        <label for="output4_original_value">PURCHASE VALUE</label>
+                        <div id="output4_original_value" class="output-box">{{ processed_text4.original_amount }}</div>
+                        <button type="button" class="copyButton" onclick="copyOutput('output4_original_value', event)">Copy</button>
+                    </div>
+                    {% endif %}
+                    {% if processed_text4 %}
+                    <div class="output-item">
+                        <label for="output4_down_payment">DOWN PAYMENT VALUE</label>
+                        <div id="output4_down_payment" class="output-box">{{ processed_text4.down_payment_value }}</div>
+                        <button type="button" class="copyButton" onclick="copyOutput('output4_down_payment', event)">Copy</button>
+                    </div>
+                    {% endif %}
+                    {% if processed_text4 %}
+                    <div class="output-item">
+                        <label for="output4_loan_amount">LOAN AMOUNTED TO BE ENTERED</label>
+                        <div id="output4_loan_amount" class="output-box">{{ processed_text4.loan_amount }}</div>
+                        <button type="button" class="copyButton" onclick="copyOutput('output4_loan_amount', event)">Copy</button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="input-group">
+                    <h2>GUARANTOR NAME</h2>
+                    <textarea name="input_text2" rows="5" placeholder="Enter your text here..."></textarea>
+                </div>
+                <div class="output-group">
+                    {% if processed_text2 %}
+                    <div class="output-item">
+                        <div id="output2" class="output-box">{{ processed_text2 }}</div>
+                        <button type="button" class="copyButton" onclick="copyOutput('output2', event)">Copy</button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Process All Texts</button>
+                <button type="reset">Reset</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function copyOutput(outputId, event) {
+            event.preventDefault(); // Prevent button click from submitting form
+            const output = document.getElementById(outputId);
+            const textArea = document.createElement('textarea');
+            textArea.value = output.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            const copyButton = event.currentTarget;
+            const originalText = copyButton.textContent;
+            copyButton.textContent = 'Copied!';
+            setTimeout(() => {
+                copyButton.textContent = originalText;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
