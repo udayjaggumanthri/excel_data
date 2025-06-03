@@ -137,8 +137,8 @@ def home(request):
         user_input8 = request.POST.get('input_text8', '') # Monthly Principal Reduction %
 
         # Process texts as per requirements
-        processed_text1 = user_input1.strip().upper().replace(' ', '   ')
-        processed_text2 = user_input2.strip().upper().replace(' ', '   ')
+        processed_text1 = user_input1.strip().upper().replace(' ', '  ')
+        processed_text2 = user_input2.strip().upper().replace(' ', '  ')
         processed_text3 = format_location(user_input3)
 
         try:
