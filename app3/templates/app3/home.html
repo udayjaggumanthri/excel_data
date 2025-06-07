@@ -1,0 +1,115 @@
+{% extends "app3/base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <h1>Level 3</h1>  
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <form method="POST">
+            {% csrf_token %}
+            
+        <!-- Image Information Section -->
+            <div class="form-section image-info-section">
+                <div class="input-group">
+                    <h2>Image Information</h2>
+                    <div class="image-info-fields">
+                    <div class="field-group">
+                        <label for="image_number">Image Number*</label>
+                        <input type="text" id="image_number" name="image_number" required>
+                    </div>
+                    <div class="field-group">
+                        <label for="username">Username*</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    
+                    <div class="field-group">
+                        <label for="customer_reference_number">Customer Reference Number*</label>
+                        <textarea name="customer_reference_number" rows="2" placeholder="Enter customer reference number here..." required></textarea>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+        <!-- Customer Information Section -->
+            <div class="form-section">
+                <div class="input-group">
+                <h2>Customer Information</h2>
+                <div class="field-group">
+                    <label for="customer_name">Customer Name*</label>
+                    <textarea name="customer_name" rows="3" placeholder="Enter customer name here..." required></textarea>
+                </div>
+                <div class="field-group">
+                    <label for="city">City*</label>
+                    <input type="text" id="city" name="city" placeholder="Enter city..." required>
+                </div>
+                <div class="field-group">
+                    <label for="state">State*</label>
+                    <input type="text" id="state" name="state" placeholder="Enter state..." required>
+                </div>
+                </div>
+            </div>
+
+        <!-- Purchase Value Section -->
+            <div class="form-section">
+                <div class="input-group">
+                <h2>Purchase Value Information</h2>
+                <div class="field-group">
+                    <label for="purchase_value">Purchase Value*</label>
+                    <input type="number" step="0.01" id="purchase_value" name="purchase_value" required>
+                </div>
+                <div class="field-group">
+                    <label for="down_payment">Down Payment*</label>
+                    <input type="number" step="0.01" id="down_payment" name="down_payment" required>
+                </div>
+                </div>
+            </div>
+
+        <!-- Loan Information Section -->
+        <div class="form-section">
+            <div class="input-group">
+                <h2>Loan Information</h2>
+                <div class="field-group">
+                    <label for="loan_period">Loan Period (Years)*</label>
+                    <input type="number" id="loan_period" name="loan_period" required>
+                </div>
+                <div class="field-group">
+                    <label for="interest_rate">Annual Interest Rate %*</label>
+                    <input type="number" step="0.01" id="interest_rate" name="interest_rate" required>
+                </div>
+                <div class="field-group">
+                    <label for="insurance">Monthly Insurance*</label>
+                    <input type="number" step="0.01" id="insurance" name="insurance" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guarantor Information Section -->
+        <div class="form-section">
+            <div class="input-group">
+                <h2>Guarantor Information</h2>
+                <div class="field-group">
+                    <label for="guarantor_name">Guarantor Name</label>
+                    <textarea name="guarantor_name" rows="3" placeholder="Enter guarantor name here..."></textarea>
+                </div>
+                <div class="field-group">
+                    <label for="guarantor_reference_number">Guarantor Reference Number</label>
+                    <textarea name="guarantor_reference_number" rows="2" placeholder="Enter guarantor reference number here..."></textarea>
+                </div>
+            </div>
+        </div>
+
+            <div class="form-actions">
+                <button type="submit">Process All Data</button>
+                <button type="reset">Reset</button>
+            </div>
+        </form>
+    </div>
+{% endblock %} 

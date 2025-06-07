@@ -17,7 +17,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rangefilter',
     'app',
-    'app2',
+    'app2', 
+    'app3',
 ]
 
 MIDDLEWARE = [

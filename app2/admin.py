@@ -1,25 +1,30 @@
 from django.contrib import admin
+from .models import ProcessedData2
 from django.http import HttpResponse
 import xlwt
-from .models import ProcessedData2
+from datetime import datetime
+from django.utils import timezone
+from rangefilter.filters import DateRangeFilter
 
 @admin.register(ProcessedData2)
-class ProcessedData2Admin(admin.ModelAdmin):
-    list_display = ('image_number', 'serial_number', 'username', 'customer_name', 'city_state', 'entry_timestamp')
-    list_filter = ('entry_timestamp', 'username', 'city_state')
-    search_fields = ('image_number', 'serial_number', 'username', 'customer_name', 'customer_reference_number', 'guarantor_name')
-    readonly_fields = ('entry_timestamp', 'reduced_value', 'down_payment_value', 'loan_amount', 'annual_principal',
-                      'monthly_principal', 'final_principal', 'interest_per_annum', 'total_interest_for_period',
-                      'final_total_interest', 'pmi_per_annum')
+class ProcessedDataAdmin2(admin.ModelAdmin):
+    list_display = ('image_number', 'serial_number', 'username', 'customer_name', 'city_state', 
+                   'purchase_value_and_down_payment', 'loan_period_and_interest', 
+                   'loan_amount_and_principal', 'insurance_and_pmi', 'entry_timestamp')
+    list_filter = (('entry_timestamp', DateRangeFilter), 'image_number', 'username')
+    search_fields = ('image_number', 'username', 'customer_name', 'customer_reference_number', 'guarantor_name')
+    readonly_fields = ('entry_timestamp', 'loan_period_and_interest', 
+                      'purchase_value_and_down_payment', 'loan_amount_and_principal',
+                      'insurance_and_pmi')
     actions = ['export_to_excel']
-
+    
     def export_to_excel(self, request, queryset):
         """Export selected records to Excel"""
         response = HttpResponse(content_type='application/ms-excel')
-        response['Content-Disposition'] = 'attachment; filename="processed_data2.xls"'
+        response['Content-Disposition'] = 'attachment; filename="processed_data.xls"'
 
         wb = xlwt.Workbook(encoding='utf-8')
-        ws = wb.add_sheet('Processed Data 2')
+        ws = wb.add_sheet('Processed Data')
 
         # Write headers
         headers = [
@@ -72,24 +77,42 @@ class ProcessedData2Admin(admin.ModelAdmin):
         wb.save(response)
         return response
     export_to_excel.short_description = "Export selected records to Excel"
-
+    
     fieldsets = (
-        ('Basic Information', {
-            'fields': ('image_number', 'serial_number', 'username', 'customer_reference_number', 'customer_name', 'city_state')
+        ('Image Information', {
+            'fields': ('image_number', 'serial_number', 'customer_reference_number')
+        }),
+        ('Customer Information', {
+            'fields': ('customer_name', 'city_state')
+        }),
+        ('Purchase Value and Down Payment', {
+            'fields': ('purchase_value_excel', 'down_payment_percent', 'purchase_value_and_down_payment')
+        }),
+        ('Loan Period and Interest', {
+            'fields': ('loan_period_years', 'annual_interest_rate', 'loan_period_and_interest')
+        }),
+        ('Loan Amount and Principal', {
+            'fields': ('loan_amount', 'final_principal', 'loan_amount_and_principal')
+        }),
+        ('Insurance Information', {
+            'fields': ('property_insurance_per_month', 'pmi_per_annum', 'insurance_and_pmi')
+        }),
+        ('Total Interest', {
+            'fields': ('total_interest_for_period',)
         }),
         ('Guarantor Information', {
             'fields': ('guarantor_name', 'guarantor_reference_number')
-        }),
-        ('Financial Information', {
-            'fields': ('purchase_value', 'down_payment_percent', 'loan_period_years', 'annual_interest_rate',
-                      'property_insurance_per_month')
-        }),
-        ('Calculated Values', {
-            'fields': ('reduced_value', 'down_payment_value', 'loan_amount', 'annual_principal',
-                      'monthly_principal', 'final_principal', 'interest_per_annum',
-                      'total_interest_for_period', 'final_total_interest', 'pmi_per_annum')
         }),
         ('Metadata', {
             'fields': ('entry_timestamp',)
         }),
     )
+    
+    list_per_page = 20
+    save_on_top = True
+    ordering = ('-entry_timestamp',)
+
+    def save_model(self, request, obj, form, change):
+        if obj.customer_reference_number:
+            obj.customer_reference_number = obj.customer_reference_number.strip().upper().replace(' ', '   ')
+        super().save_model(request, obj, form, change)

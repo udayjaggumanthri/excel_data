@@ -1,0 +1,239 @@
+{% extends "app3/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h1>Processed Data Results</h1>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="results-container">
+        <!-- Image Information -->
+        <div class="result-section">
+            <h2>Image Information</h2>
+            <div class="result-group">
+                <label>Image Number:</label>
+                <div class="result-item">
+                    <div id="image_number" class="result-box">{{ image_number }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('image_number')">Copy</button>
+                </div>
+            </div>
+            <div class="result-group">
+                <label>Username:</label>
+                <div class="result-item">
+                    <div id="username" class="result-box">{{ username }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('username')">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Information -->
+        <div class="result-section">
+            <h2>Customer Information</h2>
+            <div class="result-group">
+                <label>Customer Reference Number:</label>
+                <div class="result-item">
+                    <div id="customer_ref" class="result-box">{{ customer_reference_number }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('customer_ref')">Copy</button>
+                </div>
+            </div>
+            <div class="result-group">
+                <label>Customer Name:</label>
+                <div class="result-item">
+                    <div id="customer_name" class="result-box">{{ customer_name }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('customer_name')">Copy</button>
+                </div>
+            </div>
+            <div class="result-group">
+                <label>City, State:</label>
+                <div class="result-item">
+                    <div id="city_state" class="result-box">{{ city_state }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('city_state')">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Information -->
+        <div class="result-section">
+            <h2>Financial Information</h2>
+            <div class="result-group">
+                <label>Purchase Value and Down Payment:</label>
+                <div class="result-item">
+                    <div id="purchase_and_down" class="result-box">{{ purchase_value_and_down_payment }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('purchase_and_down')">Copy</button>
+                </div>
+            </div>
+            <div class="result-group">
+                <label>Loan Period and Interest:</label>
+                <div class="result-item">
+                    <div id="period_and_interest" class="result-box">{{ loan_period_and_interest }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('period_and_interest')">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guarantor Information -->
+        <div class="result-section">
+            <h2>Guarantor Information</h2>
+            <div class="result-group">
+                <label>Guarantor Name:</label>
+                <div class="result-item">
+                    <div id="guarantor_name" class="result-box">{{ guarantor_name }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('guarantor_name')">Copy</button>
+                </div>
+            </div>
+            <div class="result-group">
+                <label>Guarantor Reference Number:</label>
+                <div class="result-item">
+                    <div id="guarantor_ref" class="result-box">{{ guarantor_reference_number }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('guarantor_ref')">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loan and Interest Information -->
+        <div class="result-section">
+            <h2>Loan and Interest Information</h2>
+            <div class="result-group">
+                <label>Loan Amount and Principal:</label>
+                <div class="result-item">
+                    <div id="loan_and_principal" class="result-box">{{ loan_amount_and_principal }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('loan_and_principal')">Copy</button>
+                </div>
+            </div>
+            <div class="result-group">
+                <label>Total Interest for Period:</label>
+                <div class="result-item">
+                    <div id="total_interest" class="result-box">{{ total_interest_for_period }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('total_interest')">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insurance Information -->
+        <div class="result-section">
+            <h2>Insurance Information</h2>
+            <div class="result-group">
+                <label>Insurance and PMI:</label>
+                <div class="result-item">
+                    <div id="insurance_and_pmi" class="result-box">{{ insurance_and_pmi }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('insurance_and_pmi')">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="button-section">
+        <a href="{% url 'app3:home3' %}" class="btn btn-primary">Process New Data</a>
+    </div>
+</div>
+
+<style>
+.results-container {
+    margin-top: 30px;
+}
+
+.result-section {
+    background: #f8f9fa;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.result-group {
+    margin-bottom: 15px;
+}
+
+.result-group label {
+    display: block;
+    color: #34495e;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.result-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.result-box {
+    flex-grow: 1;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #dce4ec;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.copyButton {
+    padding: 5px 15px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.copyButton:hover {
+    background: #2980b9;
+}
+
+.button-section {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.button-section .btn {
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+.messages {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+</style>
+
+<script>
+function copyOutput(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.innerText;
+    navigator.clipboard.writeText(text).then(function() {
+        // Visual feedback
+        element.style.backgroundColor = '#e8f5e9';
+        setTimeout(function() {
+            element.style.backgroundColor = '';
+        }, 200);
+    }).catch(function(err) {
+        console.error('Failed to copy text: ', err);
+    });
+}
+</script>
+{% endblock %} 
