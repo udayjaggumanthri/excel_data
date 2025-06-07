@@ -1,6 +1,10 @@
 import re
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from decimal import Decimal, ROUND_DOWN, getcontext
+from .models import ProcessedData
+from datetime import datetime
+from django.utils import timezone
+from django.contrib import messages
 
 # Decimal precision setup
 # ——— Decimal Setup ———
@@ -122,84 +126,215 @@ def format_location(text):
     return formatted
 
 def home(request):
-    processed_text1 = ''
-    processed_text2 = ''
-    processed_text3 = ''
-    processed_text4 = {}
     if request.method == 'POST':
-        user_input1 = request.POST.get('input_text1', '')
-        user_input2 = request.POST.get('input_text2', '')
-        user_input3 = request.POST.get('input_text3', '')
-        user_input4 = request.POST.get('input_text4', '') # Alphanumeric Purchase Value
-        user_input5 = request.POST.get('input_text5', '') # Purchase Value Reduction %
-        user_input6 = request.POST.get('input_text6', '') # Down Payment %
-        user_input7 = request.POST.get('input_text7', '') # Loan Period (years)
-        user_input8 = request.POST.get('input_text8', '') # Monthly Principal Reduction %
+        # Get image information
+        image_number = request.POST.get('image_number', '')
+        
+        if not image_number:
+            messages.error(request, "Image number is required!")
+            return redirect('home')
 
-        # Process texts as per requirements
-        processed_text1 = user_input1.strip().upper().replace(' ', '  ')
-        processed_text2 = user_input2.strip().upper().replace(' ', '  ')
+        # Get all form inputs
+        user_input_ref = request.POST.get('input_text_ref', '')
+        username = request.POST.get('username', '').strip()  # Get username from form
+        
+        if not user_input_ref:
+            messages.error(request, "Customer Reference Number is required!")
+            return redirect('home')
+
+        # Process the reference number first to check uniqueness
+        processed_text_ref = user_input_ref.strip().upper().replace(' ', '   ')
+        
+        # Check if customer reference number already exists
+        if ProcessedData.objects.filter(customer_reference_number=processed_text_ref).exists():
+            messages.error(request, "This Customer Reference Number already exists!")
+            return redirect('home')
+
+        # Get remaining form inputs
+        user_input1 = request.POST.get('input_text1', '')  # Customer Name
+        user_input2 = request.POST.get('input_text2', '')  # Guarantor Name
+        user_input3 = request.POST.get('input_text3', '')  # City, State
+        user_input4 = request.POST.get('input_text4', '')  # Purchase Value
+        
+        # Get numerical inputs
+        try:
+            purchase_value_reduction = Decimal(request.POST.get('purchase_value_reduction', '0'))
+            
+            # Handle down payment to preserve exact format
+            down_payment_str = request.POST.get('down_payment', '0')
+            down_payment = Decimal(down_payment_str)
+            # Store whether original had decimal points
+            has_decimal = '.' in down_payment_str
+            
+            loan_period = int(request.POST.get('loan_period', '0'))
+            annual_interest = Decimal(request.POST.get('annual_interest', '0'))
+            monthly_principal_reduction = Decimal(request.POST.get('monthly_principal_reduction', '0'))
+            total_interest_reduction = Decimal(request.POST.get('total_interest_reduction', '0'))
+        except (ValueError, TypeError, InvalidOperation) as e:
+            messages.error(request, f"Invalid numerical input: {str(e)}")
+            return redirect('home')
+
+        # Process texts
+        processed_text1 = user_input1.strip().upper().replace(' ', '   ')
+        processed_text2 = user_input2.strip().upper().replace(' ', '   ')
         processed_text3 = format_location(user_input3)
+        processed_text_guarantor_ref = request.POST.get('input_text_guarantor_ref', '').strip().upper().replace(' ', '   ')
 
         try:
-            # 1) Convert spelled-out to Decimal
+            # Get next serial number
+            serial_number = ProcessedData.get_next_serial_number(image_number)
+
+            # 1. Purchase Value Calculations
             original_amount = convert_alphanumeric_to_decimal(user_input4)
 
-            # 2) Compute Reduced Purchase Value
-            if not user_input5:
-                raise ValueError("Purchase Value Reduction % cannot be empty.")
-            pv_reduction_frac = Decimal(user_input5) / Decimal(100)
-            raw_reduced = original_amount * pv_reduction_frac
+            # Calculate Reduced Value
+            raw_reduced = original_amount * (purchase_value_reduction / Decimal('100'))
             reduced_value = truncate_two_decimals(raw_reduced)
+            
+            # Calculate Purchase Value for Excel
             pv_enter_excel = truncate_two_decimals(original_amount - reduced_value)
 
-            # 3) Down Payment & Loan Amount
-            if not user_input6:
-                raise ValueError("Down Payment % cannot be empty.")
-            dp_frac = Decimal(user_input6) / Decimal(100)
-            raw_dp_value = pv_enter_excel * dp_frac
+            # 2. Loan Amount Calculations
+            raw_dp_value = pv_enter_excel * (down_payment / Decimal('100'))
             dp_value = truncate_two_decimals(raw_dp_value)
             loan_amount = truncate_two_decimals(pv_enter_excel - dp_value)
 
-            # 4) Loan Period & Monthly Principal Reduction
-            if not user_input7:
-                raise ValueError("Loan Period cannot be empty.")
-            loan_period_years = int(user_input7)
-            if loan_period_years <= 0:
-                raise ValueError("Loan Period must be a positive integer.")
+            # Store the down payment value in its original format for display
+            down_payment_display = f"{down_payment:.2f}" if has_decimal else f"{int(down_payment)}"
 
-            if not user_input8:
-                raise ValueError("Monthly Principal Reduction % cannot be empty.")
-            mpr_frac = Decimal(user_input8) / Decimal(100)
-
-            # 5) Compute Annual Principal (truncated), Monthly Principal (truncated), and Final Principal
-            raw_annual_principal = loan_amount / Decimal(loan_period_years)
+            # 3. Principal Calculations
+            raw_annual_principal = loan_amount / Decimal(loan_period)
             annual_principal = truncate_two_decimals(raw_annual_principal)
-            monthly_principal = truncate_two_decimals(annual_principal / Decimal(12))
-            final_principal = truncate_two_decimals(monthly_principal * mpr_frac)
+            monthly_principal = truncate_two_decimals(annual_principal / Decimal('12'))
+            final_principal = truncate_two_decimals(monthly_principal * (monthly_principal_reduction / Decimal('100')))
 
-            processed_text4 = {
-                'original_amount': format_with_commas(original_amount),
-                'pv_reduction_input': user_input5,
-                'reduced_value': format_with_commas(reduced_value),
-                'pv_enter_excel': format_with_commas(pv_enter_excel),
-                'down_payment_input': user_input6,
-                'dp_value': format_with_commas(dp_value),
-                'loan_amount': format_with_commas(loan_amount),
-                'loan_period_input': user_input7,
-                'mpr_input': user_input8,
-                'annual_principal': format_with_commas(annual_principal),
-                'monthly_principal': format_with_commas(monthly_principal),
-                'final_principal': format_with_commas(final_principal)
+            # 4. Interest Calculations
+            raw_interest_per_annum = loan_amount * (annual_interest / Decimal('100'))
+            interest_per_annum = truncate_two_decimals(raw_interest_per_annum)
+            raw_total_interest = interest_per_annum * Decimal(loan_period)
+            total_interest_for_period = truncate_two_decimals(raw_total_interest)
+
+            # 5. Insurance Calculations
+            loan_percentage = Decimal('100') - down_payment
+
+            # Calculate Property Insurance Rate based on loan percentage and period
+            if loan_percentage <= Decimal('84.99'):
+                property_insurance_rate = Decimal('0.32')
+            elif loan_percentage == Decimal('85'):
+                property_insurance_rate = Decimal('0.21') if loan_period <= 25 else Decimal('0.32')
+            elif Decimal('85.01') <= loan_percentage <= Decimal('90'):
+                property_insurance_rate = Decimal('0.41') if loan_period <= 25 else Decimal('0.52')
+            elif Decimal('90.01') <= loan_percentage <= Decimal('95'):
+                property_insurance_rate = Decimal('0.67') if loan_period <= 25 else Decimal('0.78')
+            else:  # 95.01 to 100
+                property_insurance_rate = Decimal('0.85') if loan_period <= 25 else Decimal('0.96')
+
+            # Calculate Property Insurance
+            raw_property_insurance_per_annum = loan_amount * (property_insurance_rate / Decimal('100'))
+            property_insurance_per_annum = truncate_two_decimals(raw_property_insurance_per_annum)
+            property_insurance_per_month = truncate_two_decimals(property_insurance_per_annum / Decimal('12'))
+
+            # Calculate PMI Rate based on loan percentage and period
+            pmi_per_annum = None  # Default to None (will be displayed as "NA")
+            if loan_percentage > Decimal('80'):  # Only calculate PMI if loan percentage is greater than 80%
+                if Decimal('80.01') <= loan_percentage <= Decimal('85'):
+                    pmi_rate = Decimal('0.19') if loan_period <= 20 else Decimal('0.32')
+            elif Decimal('85.01') <= loan_percentage <= Decimal('90'):
+                pmi_rate = Decimal('0.23') if loan_period <= 20 else Decimal('0.52')
+            elif Decimal('90.01') <= loan_percentage <= Decimal('95'):
+                pmi_rate = Decimal('0.26') if loan_period <= 20 else Decimal('0.78')
+            else:  # 95.01 to 100
+                pmi_rate = Decimal('0.79') if loan_period <= 20 else Decimal('0.90')
+
+                raw_pmi_per_annum = loan_amount * (pmi_rate / Decimal('100'))
+                pmi_per_annum = truncate_two_decimals(raw_pmi_per_annum)
+
+            # Create ProcessedData instance
+            processed_data = ProcessedData(
+                # 1. Image Information
+                image_number=image_number,
+                serial_number=serial_number,
+                username=username,  # Add username to the instance
+                
+                # 2. Customer Reference Number
+                customer_reference_number=processed_text_ref,
+                
+                # 3. Customer Information
+                customer_name=processed_text1,
+                city_state=processed_text3,
+                
+                # 4. Purchase Value and Down Payment
+                purchase_value_excel=pv_enter_excel,
+                down_payment_percent=down_payment_display,
+                
+                # 5. Loan Period and Interest
+                loan_period_years=loan_period,
+                annual_interest_rate=annual_interest,
+                
+                # 6. Guarantor Information
+                guarantor_name=processed_text2,
+                guarantor_reference_number=processed_text_guarantor_ref,
+                
+                # 7. Loan and Principal
+                loan_amount=loan_amount,
+                final_principal=final_principal,
+                
+                # 8. Total Interest
+                total_interest_for_period=total_interest_for_period,
+                
+                # 9. Insurance Information
+                property_insurance_per_month=property_insurance_per_month,
+                pmi_per_annum=pmi_per_annum
+            )
+
+            # Save the processed data
+            processed_data.save()
+            
+            # Store data in session for results page
+            request.session['processed_data'] = {
+                'image_number': image_number,
+                'serial_number': serial_number,
+                'processed_text_ref': processed_text_ref,
+                'processed_text1': processed_text1,
+                'processed_text2': processed_text2,
+                'processed_text3': processed_text3,
+                'processed_text_guarantor_ref': processed_text_guarantor_ref,
+                'financial_data': {
+                    'purchase_value_excel': format_with_commas(pv_enter_excel),
+                    'down_payment_percent': down_payment_display,
+                    'loan_period_years': str(loan_period),
+                    'annual_interest_rate': str(annual_interest),
+                    'loan_amount': format_with_commas(loan_amount),
+                    'final_principal': format_with_commas(final_principal),
+                    'total_interest_for_period': format_with_commas(total_interest_for_period),
+                    'property_insurance_per_month': format_with_commas(property_insurance_per_month),
+                    'pmi_per_annum': format_with_commas(pmi_per_annum) if pmi_per_annum else 'NA'
+                }
             }
+            
+            messages.success(request, f"Data for Image {image_number}, Serial {serial_number} successfully processed!")
+            return redirect('results')
+
         except ValueError as e:
-            processed_text4 = f"Error: {e}"
+            messages.error(request, str(e))
+            return redirect('home')
         except Exception as e:
-            processed_text4 = f"An unexpected error occurred: {e}"
+            messages.error(request, str(e))
+            return redirect('home')
+
+    # For GET requests, show empty form
+    return render(request, 'app/home.html', {})
+
+def results(request):
+    # Get processed data from session
+    processed_data = request.session.get('processed_data', None)
+    if not processed_data:
+        messages.error(request, "No processed data found!")
+        return redirect('home')
     
-    return render(request, 'app/home.html', {
-        'processed_text1': processed_text1,
-        'processed_text2': processed_text2,
-        'processed_text3': processed_text3,
-        'processed_text4': processed_text4
-    })
+    # Clear the session data after retrieving it
+    del request.session['processed_data']
+    
+    return render(request, 'app/results.html', processed_data)
+
+

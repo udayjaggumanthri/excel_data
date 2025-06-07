@@ -1,0 +1,153 @@
+{% extends "app/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Processed Data Results</h1>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="results-container">
+        <!-- Image Information -->
+        <div class="result-section">
+            <div class="result-group">
+                <label>Image Number:</label>
+                <div class="result-item">
+                    <div id="image_number" class="result-box">{{ image_number }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('image_number')">Copy</button>
+                </div>
+            </div>
+            <div class="result-group">
+                <label>Serial Number:</label>
+                <div class="result-item">
+                    <div id="serial_number" class="result-box">{{ serial_number }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('serial_number')">Copy</button>
+                </div>
+            </div>
+            <div class="result-group">
+                <label>Username:</label>
+                <div class="result-item">
+                    <div id="username" class="result-box">{{ username }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('username')">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Information -->
+        <div class="result-section">
+            <div class="result-group">
+                <label>Customer Reference Number:</label>
+                <div class="result-item">
+                    <div id="customer_ref" class="result-box">{{ processed_text_ref }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('customer_ref')">Copy</button>
+                </div>
+            </div>
+            <div class="result-group">
+                <label>Customer Name:</label>
+                <div class="result-item">
+                    <div id="customer_name" class="result-box">{{ processed_text1 }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('customer_name')">Copy</button>
+                </div>
+            </div>
+            <div class="result-group">
+                <label>City, State:</label>
+                <div class="result-item">
+                    <div id="city_state" class="result-box">{{ processed_text3 }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('city_state')">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Information -->
+        <div class="result-section">
+            <div class="result-group">
+                <label>Purchase Value and Down Payment:</label>
+                <div class="result-item">
+                    <div id="purchase_and_down" class="result-box">{{ financial_data.purchase_value_excel }} AND {{ financial_data.down_payment_percent }}%</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('purchase_and_down')">Copy</button>
+                </div>
+            </div>
+            <div class="result-group">
+                <label>Loan Period and Annual Interest:</label>
+                <div class="result-item">
+                    <div id="period_and_interest" class="result-box">{{ financial_data.loan_period_years }} YEARS AND {{ financial_data.annual_interest_rate }}%</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('period_and_interest')">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guarantor Information -->
+        <div class="result-section">
+            <div class="result-group">
+                <label>Guarantor Name:</label>
+                <div class="result-item">
+                    <div id="guarantor_name" class="result-box">{{ processed_text2 }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('guarantor_name')">Copy</button>
+                </div>
+            </div>
+            <div class="result-group">
+                <label>Guarantor Reference Number:</label>
+                <div class="result-item">
+                    <div id="guarantor_ref" class="result-box">{{ processed_text_guarantor_ref }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('guarantor_ref')">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loan and Interest Information -->
+        <div class="result-section">
+            <div class="result-group">
+                <label>Loan Amount and Principal:</label>
+                <div class="result-item">
+                    <div id="loan_and_principal" class="result-box">{{ financial_data.loan_amount }} AND {{ financial_data.final_principal }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('loan_and_principal')">Copy</button>
+                </div>
+            </div>
+            <div class="result-group">
+                <label>Total Interest for Loan Period:</label>
+                <div class="result-item">
+                    <div id="total_interest" class="result-box">{{ financial_data.total_interest_for_period }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('total_interest')">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insurance Information -->
+        <div class="result-section">
+            <div class="result-group">
+                <label>Property Insurance per Month and PMI per Annum:</label>
+                <div class="result-item">
+                    <div id="insurance_and_pmi" class="result-box">{{ financial_data.property_insurance_per_month }} AND {{ financial_data.pmi_per_annum }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('insurance_and_pmi')">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="button-section">
+        <a href="{% url 'home' %}" class="btn btn-primary">Process New Data</a>
+    </div>
+</div>
+
+<script>
+function copyOutput(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.innerText;
+    navigator.clipboard.writeText(text).then(function() {
+        // Visual feedback
+        element.style.backgroundColor = '#e8f5e9';
+        setTimeout(function() {
+            element.style.backgroundColor = '';
+        }, 200);
+    }).catch(function(err) {
+        console.error('Failed to copy text: ', err);
+    });
+}
+</script>
+{% endblock %} 
