@@ -209,10 +209,17 @@ def home(request):
             final_principal = truncate_two_decimals(monthly_principal * (monthly_principal_reduction / Decimal('100')))
 
             # 4. Interest Calculations
-            raw_interest_per_annum = loan_amount * (annual_interest / Decimal('100'))
-            interest_per_annum = truncate_two_decimals(raw_interest_per_annum)
-            raw_total_interest = interest_per_annum * Decimal(loan_period)
-            total_interest_for_period = truncate_two_decimals(raw_total_interest)
+            # Calculate Interest per annum
+            interest_per_annum = loan_amount * (annual_interest / Decimal('100'))
+            interest_per_annum = truncate_two_decimals(interest_per_annum)
+            
+            # Calculate Total Interest for loan period
+            total_interest_for_period = interest_per_annum * Decimal(loan_period)
+            total_interest_for_period = truncate_two_decimals(total_interest_for_period)
+            
+            # Step 3: Apply Total Interest Reduction
+            total_interest_for_period = total_interest_for_period * (total_interest_reduction / Decimal('100'))
+            total_interest_for_period = truncate_two_decimals(total_interest_for_period)
 
             # 5. Insurance Calculations
             loan_percentage = Decimal('100') - down_payment

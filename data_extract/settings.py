@@ -52,10 +52,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'data_extract.wsgi.application'
 
 '''
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'data',
+        'NAME': 'new_data',
         'USER': 'root',
         'PASSWORD': '1234',
         'HOST': 'localhost',
@@ -66,12 +67,13 @@ DATABASES = {
     }
 }
     }
+
 '''
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dataentry',
+        'NAME': 'data',
         'USER': 'root',
         'PASSWORD': 'Tanasvi@123',
         'HOST': '103.154.233.117',

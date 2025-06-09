@@ -6,7 +6,7 @@ class ProcessedData(models.Model):
     # 1. Image Information
     image_number = models.CharField(max_length=50)
     serial_number = models.IntegerField()
-    username = models.CharField(max_length=100, default='')  # New username field
+    username = models.CharField(max_length=200, default='')  # Temporarily changed max_length
     
     # 2. Customer Reference Number
     customer_reference_number = models.CharField(max_length=255, null=True, blank=True)
