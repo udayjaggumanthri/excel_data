@@ -9,7 +9,7 @@ class ProcessedData(models.Model):
     username = models.CharField(max_length=100, default='')  # New username field
     
     # 2. Customer Reference Number
-    customer_reference_number = models.TextField(unique=True, null=True, blank=True)
+    customer_reference_number = models.CharField(max_length=255, null=True, blank=True)
     
     # 3. Customer Information
     customer_name = models.TextField()
