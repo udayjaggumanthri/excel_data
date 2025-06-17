@@ -51,7 +51,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'data_extract.wsgi.application'
 
-
+'''
 
 DATABASES = {
     'default': {
@@ -85,7 +85,7 @@ DATABASES = {
 }
     }
 
-'''
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
