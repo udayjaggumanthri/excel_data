@@ -12,126 +12,137 @@
             {% endfor %}
         </div>
         {% endif %}
-        <form method="POST">
+        <form method="POST" class="main-form">
             {% csrf_token %}
             
-        <!-- Image Information Section -->
-            <div class="form-section image-info-section">
-                <div class="input-group">
-                    <h2>Image Information</h2>
-                    <div class="image-info-fields">
-                    <div class="field-group">
-                        <label for="image_number">Image Number*</label>
-                        <input type="text" id="image_number" name="image_number" value="{{ image_number }}" required>
+            <div class="form-grid">
+                <!-- Image Information Section -->
+                <div class="form-section image-info-section">
+                    <div class="input-group">
+                        <h2>Image Information</h2>
+                        <div class="image-info-fields">
+                            <div class="field-group">
+                                <label for="image_number">Image Number*</label>
+                                <input type="text" id="image_number" name="image_number" value="{{ image_number }}" required>
+                            </div>
+                            <div class="field-group">
+                                <label for="username">Username*</label>
+                                <input type="text" id="username" name="username" required>
+                            </div>
+                            <div class="field-group">
+                                <label for="input_text_ref">Customer Reference Number*</label>
+                                <textarea name="input_text_ref" rows="1" placeholder="Enter customer reference number here..." required>{{ user_input_ref }}</textarea>
+                            </div>
+                            {% if serial_number %}
+                            <div class="field-group">
+                                <label>Serial Number</label>
+                                <div class="output-box">{{ serial_number }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
-                    <div class="field-group">
-                        <label for="username">Username*</label>
-                        <input type="text" id="username" name="username" required>
-                    </div>
-                    
-                    <div class="field-group">
-                        <label for="input_text_ref">Customer Reference Number*</label>
-                        <textarea name="input_text_ref" rows="2" placeholder="Enter customer reference number here..." required>{{ user_input_ref }}</textarea>
-                    </div>
+                </div>
 
-                    {% if serial_number %}
-                    <div class="field-group">
-                        <label>Serial Number</label>
-                        <div class="output-box">{{ serial_number }}</div>
+                <!-- Customer Information Section -->
+                <div class="form-section">
+                    <div class="input-group">
+                        <h2>Customer Information</h2>
+                        <div class="field-group">
+                            <label for="input_text1">Customer Name*</label>
+                            <textarea name="input_text1" rows="2" placeholder="Enter customer name here..." required></textarea>
+                        </div>
+                        <div class="field-group">
+                            <label for="input_text3">City, State*</label>
+                            <textarea name="input_text3" rows="1" placeholder="Enter location here..." required></textarea>
+                        </div>
                     </div>
-                    {% endif %}
                 </div>
-                </div>
-            </div>
 
-        <!-- Customer Information Section -->
-            <div class="form-section">
-                <div class="input-group">
-                <h2>Customer Information</h2>
-                <div class="field-group">
-                    <label for="input_text1">Customer Name*</label>
-                    <textarea name="input_text1" rows="3" placeholder="Enter customer name here..." required></textarea>
-                </div>
-                <div class="field-group">
-                    <label for="input_text3">City, State*</label>
-                    <textarea name="input_text3" rows="2" placeholder="Enter location here..." required></textarea>
+                <!-- Purchase Value Section -->
+                <div class="form-section">
+                    <div class="input-group">
+                        <h2>Purchase Value Information</h2>
+                        <div class="field-group">
+                            <label for="input_text4">Purchase Value*</label>
+                            <textarea name="input_text4" rows="2" required>{{ user_input4 }}</textarea>
+                        </div>
+                        <div class="field-group">
+                            <label for="purchase_value_reduction">Purchase Value Reduction %*</label>
+                            <input type="number" step="0.01" id="purchase_value_reduction" name="purchase_value_reduction" required>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-        <!-- Purchase Value Section -->
-            <div class="form-section">
-                <div class="input-group">
-                <h2>Purchase Value Information</h2>
-                <div class="field-group">
-                    <label for="input_text4">Purchase Value* (e.g., '$ Four Hundred... dollars and Twenty... cents')</label>
-                    <textarea name="input_text4" rows="3" required>{{ user_input4 }}</textarea>
+                <!-- Loan Information Section -->
+                <div class="form-section">
+                    <div class="input-group">
+                        <h2>Loan Information</h2>
+                        <div class="field-group">
+                            <label for="down_payment">Down Payment %*</label>
+                            <input type="number" step="0.01" id="down_payment" name="down_payment" required>
+                        </div>
+                        <div class="field-group">
+                            <label for="loan_period">Loan Period (Years)*</label>
+                            <input type="number" id="loan_period" name="loan_period" required>
+                        </div>
+                        <div class="field-group">
+                            <label for="annual_interest">Annual Interest Rate %*</label>
+                            <input type="number" step="0.01" id="annual_interest" name="annual_interest" required>
+                        </div>
+                    </div>
                 </div>
-                <div class="field-group">
-                    <label for="purchase_value_reduction">Purchase Value Reduction %*</label>
-                    <input type="number" step="0.01" id="purchase_value_reduction" name="purchase_value_reduction" required>
-                    </div>
-                    </div>
-                    </div>
 
-        <!-- Loan Information Section -->
-        <div class="form-section">
-            <div class="input-group">
-                <h2>Loan Information</h2>
-                <div class="field-group">
-                    <label for="down_payment">Down Payment %*</label>
-                    <input type="number" step="0.01" id="down_payment" name="down_payment" required>
+                <!-- Principal Reduction Section -->
+                <div class="form-section">
+                    <div class="input-group">
+                        <h2>Principal Reduction</h2>
+                        <div class="field-group">
+                            <label for="monthly_principal_reduction">Monthly Principal Reduction %*</label>
+                            <input type="number" step="0.01" id="monthly_principal_reduction" name="monthly_principal_reduction" required>
+                        </div>
                     </div>
-                <div class="field-group">
-                    <label for="loan_period">Loan Period (Years)*</label>
-                    <input type="number" id="loan_period" name="loan_period" required>
-                    </div>
-                <div class="field-group">
-                    <label for="annual_interest">Annual Interest Rate %*</label>
-                    <input type="number" step="0.01" id="annual_interest" name="annual_interest" required>
-                    </div>
-                    </div>
-                    </div>
+                </div>
 
-        <!-- Principal Reduction Section -->
-        <div class="form-section">
-            <div class="input-group">
-                <h2>Principal Reduction</h2>
-                <div class="field-group">
-                    <label for="monthly_principal_reduction">Monthly Principal Reduction %*</label>
-                    <input type="number" step="0.01" id="monthly_principal_reduction" name="monthly_principal_reduction" required>
-                </div>
-                </div>
-            </div>
-
-        <!-- Interest Reduction Section -->
-            <div class="form-section">
-                <div class="input-group">
-                <h2>Interest Reduction</h2>
-                <div class="field-group">
-                    <label for="total_interest_reduction">Total Interest Reduction %*</label>
-                    <input type="number" step="0.01" id="total_interest_reduction" name="total_interest_reduction" required>
-                </div>
-            </div>
-        </div>
-
-        <!-- Guarantor Information Section -->
-        <div class="form-section">
-            <div class="input-group">
-                <h2>Guarantor Information</h2>
-                <div class="field-group">
-                    <label for="input_text2">Guarantor Name</label>
-                    <textarea name="input_text2" rows="3" placeholder="Enter guarantor name here..."></textarea>
+                <!-- Interest Reduction Section -->
+                <div class="form-section">
+                    <div class="input-group">
+                        <h2>Interest Reduction</h2>
+                        <div class="field-group">
+                            <label for="total_interest_reduction">Total Interest Reduction %*</label>
+                            <input type="number" step="0.01" id="total_interest_reduction" name="total_interest_reduction" required>
+                        </div>
                     </div>
-                <div class="field-group">
-                    <label for="input_text_guarantor_ref">Guarantor Reference Number</label>
-                    <textarea name="input_text_guarantor_ref" rows="2" placeholder="Enter guarantor reference number here...">{{ user_input_guarantor_ref }}</textarea>
                 </div>
+
+                <!-- Guarantor Information Section -->
+                <div class="form-section">
+                    <div class="input-group">
+                        <h2>Guarantor Information</h2>
+                        <div class="field-group">
+                            <label for="input_text2">Guarantor Name</label>
+                            <textarea name="input_text2" rows="2" placeholder="Enter guarantor name here..."></textarea>
+                        </div>
+                        <div class="field-group">
+                            <label for="input_text_guarantor_ref">Guarantor Reference Number</label>
+                            <textarea name="input_text_guarantor_ref" rows="1" placeholder="Enter guarantor reference number here...">{{ user_input_guarantor_ref }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Property Tax Assessment Section -->
+                <div class="form-section">
+                    <div class="input-group">
+                        <h2>Property Tax Assessment</h2>
+                        <div class="field-group">
+                            <label for="assessment_reduction_rate">Assessment Reduction Rate %</label>
+                            <input type="text" id="assessment_reduction_rate" name="assessment_reduction_rate" placeholder="Enter percentage or NA">
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="form-actions">
-            <button type="submit">Process All Data</button>
+                <button type="submit">Process All Data</button>
                 <button type="reset">Reset</button>
             </div>
         </form>
@@ -139,20 +150,20 @@
 
     <script>
     function copyOutput(outputId) {
-            const output = document.getElementById(outputId);
-            const textArea = document.createElement('textarea');
-            textArea.value = output.textContent;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            
+        const output = document.getElementById(outputId);
+        const textArea = document.createElement('textarea');
+        textArea.value = output.textContent;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
         const copyButton = output.nextElementSibling;
-            const originalText = copyButton.textContent;
-            copyButton.textContent = 'Copied!';
-            setTimeout(() => {
-                copyButton.textContent = originalText;
-            }, 2000);
-        }
+        const originalText = copyButton.textContent;
+        copyButton.textContent = 'Copied!';
+        setTimeout(() => {
+            copyButton.textContent = originalText;
+        }, 2000);
+    }
     </script>
 {% endblock %}

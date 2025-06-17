@@ -110,10 +110,10 @@
                 </div>
             </div>
             <div class="result-group">
-                <label>Total Interest for Loan Period:</label>
+                <label>Total Interest for Loan Period and Property Tax for Loan Period:</label>
                 <div class="result-item">
-                    <div id="total_interest" class="result-box">{{ financial_data.total_interest_for_period }}</div>
-                    <button type="button" class="copyButton" onclick="copyOutput('total_interest')">Copy</button>
+                    <div id="total_interest_and_tax" class="result-box">{{ financial_data.total_interest_for_period }} AND {{ financial_data.formatted_property_tax }}</div>
+                    <button type="button" class="copyButton" onclick="copyOutput('total_interest_and_tax')">Copy</button>
                 </div>
             </div>
         </div>

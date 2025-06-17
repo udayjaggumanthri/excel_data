@@ -10,12 +10,12 @@ from rangefilter.filters import DateRangeFilter
 class ProcessedDataAdmin(admin.ModelAdmin):
     list_display = ('image_number', 'serial_number', 'username', 'customer_name', 'city_state', 
                    'purchase_value_and_down_payment', 'loan_period_and_interest', 
-                   'loan_amount_and_principal', 'insurance_and_pmi', 'entry_timestamp')
+                   'loan_amount_and_principal', 'insurance_and_pmi', 'formatted_property_tax', 'entry_timestamp')
     list_filter = (('entry_timestamp', DateRangeFilter), 'image_number', 'username')
     search_fields = ('image_number', 'username', 'customer_name', 'customer_reference_number', 'guarantor_name')
     readonly_fields = ('entry_timestamp', 'loan_period_and_interest', 
                       'purchase_value_and_down_payment', 'loan_amount_and_principal',
-                      'insurance_and_pmi')
+                      'insurance_and_pmi', 'formatted_property_tax')
     actions = ['export_to_excel']
     
     def export_to_excel(self, request, queryset):
@@ -39,7 +39,7 @@ class ProcessedDataAdmin(admin.ModelAdmin):
             'Guarantor Name',
             'Guarantor Reference Number',
             'Loan Amount and Principal',
-            'Total Interest for Loan Period',
+            'Total Interest for Loan Period and Property Tax for Loan Period',
             'Property Insurance per Month and PMI per Annum'
         ]
         
@@ -66,7 +66,7 @@ class ProcessedDataAdmin(admin.ModelAdmin):
                 obj.guarantor_name,
                 obj.guarantor_reference_number or '',
                 f"{obj.format_number_with_commas(obj.loan_amount)} AND {obj.format_number_with_commas(obj.final_principal)}",
-                obj.format_number_with_commas(obj.total_interest_for_period),
+                f"{obj.format_number_with_commas(obj.total_interest_for_period)} AND {obj.formatted_property_tax}",
                 f"{obj.format_number_with_commas(obj.property_insurance_per_month)} AND {obj.format_number_with_commas(obj.pmi_per_annum) if obj.pmi_per_annum else 'NA'}"
             ]
             
@@ -99,6 +99,9 @@ class ProcessedDataAdmin(admin.ModelAdmin):
         }),
         ('Total Interest', {
             'fields': ('total_interest_for_period',)
+        }),
+        ('Property Tax Information', {
+            'fields': ('assessment_reduction_rate', 'property_tax_per_annum', 'property_tax_for_period', 'formatted_property_tax')
         }),
         ('Guarantor Information', {
             'fields': ('guarantor_name', 'guarantor_reference_number')

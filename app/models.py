@@ -88,6 +88,13 @@ class ProcessedData(models.Model):
             
         return f"{formatted_insurance} AND {formatted_pmi}"
     
+    @property
+    def formatted_property_tax(self):
+        """Format property tax for loan period with proper currency formatting"""
+        if not self.assessment_reduction_rate or self.assessment_reduction_rate.upper() == 'NA':
+            return "NA"
+        return self.format_number_with_commas(self.property_tax_for_period)
+    
     # 5. Loan Period and Interest
     loan_period_years = models.IntegerField(default=0)
     annual_interest_rate = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('0.00'))
@@ -111,6 +118,11 @@ class ProcessedData(models.Model):
     # 9. Insurance Information
     property_insurance_per_month = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0.00'))
     pmi_per_annum = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True)
+    
+    # 10. Property Tax Information
+    assessment_reduction_rate = models.CharField(max_length=10, null=True, blank=True)  # Changed to CharField to handle 'NA'
+    property_tax_per_annum = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True)
+    property_tax_for_period = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True)
     
     # Metadata
     entry_timestamp = models.DateTimeField(default=timezone.now)

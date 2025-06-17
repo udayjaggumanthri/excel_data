@@ -25,7 +25,7 @@ wheels/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media
+media/
 staticfiles/
 
 # Virtual Environment
@@ -39,13 +39,7 @@ env/
 .vscode/
 *.swp
 *.swo
-*.sublime-workspace
-*.sublime-project
-
-# OS
 .DS_Store
-Thumbs.db
-desktop.ini
 
 # Project specific
 *.xlsx
@@ -87,6 +81,19 @@ db.sqlite3-journal
 celerybeat-schedule
 celerybeat.pid
 
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
 # Environments
 .env
 .venv
@@ -95,6 +102,13 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
 
 # Spyder project settings
 .spyderproject

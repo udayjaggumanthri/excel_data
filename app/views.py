@@ -248,50 +248,56 @@ def home(request):
                     pmi_rate = Decimal('0.19') if loan_period <= 20 else Decimal('0.32')
             elif Decimal('85.01') <= loan_percentage <= Decimal('90'):
                 pmi_rate = Decimal('0.23') if loan_period <= 20 else Decimal('0.52')
-            elif Decimal('90.01') <= loan_percentage <= Decimal('95'):
-                pmi_rate = Decimal('0.26') if loan_period <= 20 else Decimal('0.78')
-            else:  # 95.01 to 100
-                pmi_rate = Decimal('0.79') if loan_period <= 20 else Decimal('0.90')
 
-                raw_pmi_per_annum = loan_amount * (pmi_rate / Decimal('100'))
-                pmi_per_annum = truncate_two_decimals(raw_pmi_per_annum)
+            # Property Tax Calculations
+            try:
+                assessment_reduction_rate = request.POST.get('assessment_reduction_rate', '').strip()
+                
+                # Skip property tax calculation if field is empty or NA
+                if not assessment_reduction_rate or assessment_reduction_rate.upper() == 'NA':
+                    property_tax_per_annum = None
+                    property_tax_for_period = None
+                else:
+                    # Convert to Decimal only if it's a valid number
+                    assessment_reduction_rate = Decimal(assessment_reduction_rate)
+                    
+                    # Calculate Reduced Value
+                    raw_reduced_value = loan_amount * (assessment_reduction_rate / Decimal('100'))
+                    reduced_value = truncate_two_decimals(raw_reduced_value)
+                    
+                    # Calculate Property Tax per annum (2% fixed rate)
+                    raw_property_tax_per_annum = reduced_value * Decimal('0.02')
+                    property_tax_per_annum = truncate_two_decimals(raw_property_tax_per_annum)
+                    
+                    # Calculate Property Tax for loan period
+                    raw_property_tax_for_period = property_tax_per_annum * Decimal(loan_period)
+                    property_tax_for_period = truncate_two_decimals(raw_property_tax_for_period)
+            except (ValueError, TypeError, InvalidOperation) as e:
+                messages.error(request, f"Invalid property tax calculation: {str(e)}")
+                return redirect('home')
 
-            # Create ProcessedData instance
+            # Create and save the processed data
             processed_data = ProcessedData(
-                # 1. Image Information
                 image_number=image_number,
                 serial_number=serial_number,
-                username=username,  # Add username to the instance
-                
-                # 2. Customer Reference Number
+                username=username,
                 customer_reference_number=processed_text_ref,
-                
-                # 3. Customer Information
                 customer_name=processed_text1,
                 city_state=processed_text3,
-                
-                # 4. Purchase Value and Down Payment
                 purchase_value_excel=pv_enter_excel,
                 down_payment_percent=down_payment_display,
-                
-                # 5. Loan Period and Interest
                 loan_period_years=loan_period,
                 annual_interest_rate=annual_interest,
-                
-                # 6. Guarantor Information
                 guarantor_name=processed_text2,
                 guarantor_reference_number=processed_text_guarantor_ref,
-                
-                # 7. Loan and Principal
                 loan_amount=loan_amount,
                 final_principal=final_principal,
-                
-                # 8. Total Interest
                 total_interest_for_period=total_interest_for_period,
-                
-                # 9. Insurance Information
                 property_insurance_per_month=property_insurance_per_month,
-                pmi_per_annum=pmi_per_annum
+                pmi_per_annum=pmi_per_annum,
+                assessment_reduction_rate=assessment_reduction_rate,
+                property_tax_per_annum=property_tax_per_annum,
+                property_tax_for_period=property_tax_for_period
             )
 
             # Save the processed data
