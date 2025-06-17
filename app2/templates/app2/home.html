@@ -121,14 +121,25 @@
                 <h2>Guarantor Information</h2>
                 <div class="field-group">
                     <label for="input_text2">Guarantor Name</label>
-                    <textarea name="input_text2" rows="3" placeholder="Enter guarantor name here..."></textarea>
-                    </div>
+                    <textarea name="input_text2" rows="2" placeholder="Enter guarantor name here..."></textarea>
+                </div>
                 <div class="field-group">
                     <label for="input_text_guarantor_ref">Guarantor Reference Number</label>
-                    <textarea name="input_text_guarantor_ref" rows="2" placeholder="Enter guarantor reference number here...">{{ user_input_guarantor_ref }}</textarea>
-                </div>
+                    <textarea name="input_text_guarantor_ref" rows="1" placeholder="Enter guarantor reference number here...">{{ user_input_guarantor_ref }}</textarea>
                 </div>
             </div>
+        </div>
+
+        <!-- Property Tax Assessment Section -->
+        <div class="form-section">
+            <div class="input-group">
+                <h2>Property Tax Assessment</h2>
+                <div class="field-group">
+                    <label for="assessment_reduction_rate">Assessment Reduction Rate %</label>
+                    <input type="text" id="assessment_reduction_rate" name="assessment_reduction_rate" placeholder="Enter percentage or NA">
+                </div>
+            </div>
+        </div>
 
             <div class="form-actions">
             <button type="submit">Process All Data</button>
