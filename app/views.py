@@ -175,8 +175,8 @@ def home(request):
             return redirect('home')
 
         # Process texts
-        processed_text1 = user_input1.strip().upper().replace(' ', '   ')
-        processed_text2 = user_input2.strip().upper().replace(' ', '   ')
+        processed_text1 = user_input1.strip().upper().replace(' ', '  ')
+        processed_text2 = user_input2.strip().upper().replace(' ', '  ')
         processed_text3 = format_location(user_input3)
         processed_text_guarantor_ref = request.POST.get('input_text_guarantor_ref', '').strip().upper().replace(' ', '   ')
 
