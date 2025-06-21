@@ -7,13 +7,13 @@ class CustomerData(models.Model):
     image_number = models.CharField(max_length=100, verbose_name="Image Number*")
     serial_number = models.CharField(max_length=50, verbose_name="Serial Number")
     customer_reference_number = models.CharField(
-        max_length=100, 
+        max_length=300, 
         unique=True, 
         verbose_name="Customer Reference Number"
     )
     customer_name = models.CharField(max_length=200, verbose_name="Customer Name")
     city_state = models.CharField(max_length=200, verbose_name="City, State")
-    purchase_value = models.CharField(max_length=50, verbose_name="Purchase Value")
+    purchase_value = models.CharField(max_length=500, verbose_name="Purchase Value")
     purchase_value_reduction_percent = models.CharField(max_length=20, verbose_name="Purchase Value Reduction %")
     down_payment_percent = models.CharField(max_length=20, verbose_name="Down Payment %")
     loan_period_years = models.CharField(max_length=10, verbose_name="Loan Period (Years)")
@@ -22,7 +22,7 @@ class CustomerData(models.Model):
     total_interest_reduction_percent = models.CharField(max_length=20, verbose_name="Total Interest Reduction %")
     guarantor_name = models.CharField(max_length=200, verbose_name="Guarantor Name")
     guarantor_reference_number = models.CharField(
-        max_length=100, 
+        max_length=300, 
         verbose_name="Guarantor Reference Number"
     )
     assessment_reduction_rate_percent = models.CharField(max_length=20, verbose_name="Assessment Reduction Rate %")
