@@ -53,7 +53,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'data_extract.wsgi.application'
 
-
+'''
 
 DATABASES = {
     'default': {
@@ -75,8 +75,7 @@ DATABASES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'data2',
-        #'NAME': 'data',
+        'NAME': 'data',
         'USER': 'root',
         'PASSWORD': 'Tanasvi@123',
         'HOST': '103.154.233.117',
@@ -88,7 +87,7 @@ DATABASES = {
 }
     }
 
-'''
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
